@@ -286,14 +286,56 @@ class SecureDataFormatter:
     
     @staticmethod
     def _safe_get(data: Dict[str, Any], key: str, default: Any = None) -> Any:
-        """Safely get nested dictionary value"""
+        """
+        Safely get value from Kismet device record
+        
+        Kismet uses flat keys with dots as part of the key name:
+        - "kismet.device.base.macaddr" is a single key
+        - "kismet.device.base.signal" might contain nested objects
+        
+        For nested objects, use / separator:
+        - "kismet.device.base.signal/kismet.common.signal.last_signal"
+        
+        Args:
+            data: Kismet device record
+            key: Field name or path
+            default: Default value if field not found
+            
+        Returns:
+            Field value or default
+        """
         try:
-            keys = key.split('.')
+            # Strategy 1: Try direct key access (Kismet flat keys with dots)
+            if key in data:
+                return data[key]
+            
+            # Strategy 2: Try path navigation for nested objects (using / separator)
+            if '/' in key:
+                parts = key.split('/')
+                value = data
+                for part in parts:
+                    if isinstance(value, dict):
+                        value = value.get(part, default)
+                        if value == default:
+                            return default
+                    else:
+                        return default
+                return value
+            
+            # Strategy 3: Fallback - try dot-separated path (for deeply nested structures)
+            # This handles cases where the data might be nested differently
+            parts = key.split('.')
             value = data
-            for k in keys:
-                value = value[k]
+            for part in parts:
+                if isinstance(value, dict):
+                    value = value.get(part, default)
+                    if value == default:
+                        return default
+                else:
+                    return default
             return value
-        except (KeyError, TypeError):
+            
+        except (KeyError, TypeError, AttributeError):
             return default
     
     @staticmethod

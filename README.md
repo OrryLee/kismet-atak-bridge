@@ -135,6 +135,8 @@ Once both the backend service and the ATAK plugin are running, you will see new 
 
 ## Development & Testing
 
+### Security Testing
+
 This repository includes a full security testing suite. To run the tests:
 
 ```bash
@@ -144,6 +146,27 @@ python3 tests/test_security_standalone.py
 ```
 
 This will run a series of tests to validate the security mitigations and ensure the code is robust against common attack vectors.
+
+### Field Exploration
+
+Before deploying, you can explore the available Kismet API fields using the field explorer tool:
+
+```bash
+cd backend/src
+python3 field_explorer.py
+```
+
+This will:
+- Connect to your Kismet server
+- Fetch a sample device record
+- List all available fields
+- Validate the REQUIRED_FIELDS list
+- Export a full field report to `kismet_fields_report.json`
+
+This is useful for:
+- Verifying field names before deployment
+- Understanding the Kismet data structure
+- Debugging field extraction issues
 
 ---
 

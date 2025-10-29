@@ -27,6 +27,45 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Field simplification list - only request fields we need from Kismet
+# This reduces bandwidth and CPU usage significantly
+REQUIRED_FIELDS = [
+    # Base device information
+    "kismet.device.base.macaddr",
+    "kismet.device.base.type",
+    "kismet.device.base.name",
+    "kismet.device.base.commonname",
+    "kismet.device.base.phyname",
+    
+    # Location data
+    "kismet.device.base.location",
+    
+    # Signal information (nested object)
+    "kismet.device.base.signal",
+    
+    # Channel information
+    "kismet.device.base.channel",
+    "kismet.device.base.frequency",
+    
+    # Timestamps
+    "kismet.device.base.first_time",
+    "kismet.device.base.last_time",
+    
+    # Wi-Fi specific (if present)
+    "dot11.device.last_bssid",
+    "dot11.device.last_beaconed_ssid",
+    "dot11.device.advertised_ssid_map",
+    
+    # Bluetooth specific (if present)
+    "bluetooth.device.bd_addr",
+    "bluetooth.device.name",
+    "bluetooth.device.manufacturer",
+    
+    # BLE specific (if present)
+    "btle.device.bd_addr",
+    "btle.device.name"
+]
+
 
 class BridgeServiceError(Exception):
     """Custom exception for bridge service errors"""
@@ -137,7 +176,8 @@ class SecureBridgeService:
             logger.debug(f"Polling Kismet for devices (last {self.lookback_seconds}s)")
             
             devices = self.kismet_client.get_recent_devices(
-                last_time=-self.lookback_seconds
+                last_time=-self.lookback_seconds,
+                fields=REQUIRED_FIELDS  # Use field simplification for efficiency
             )
             
             if not devices:

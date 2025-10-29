@@ -1,0 +1,27 @@
+# Kismet-ATAK Bridge Backend Requirements
+
+# HTTP client for Kismet API
+requests>=2.31.0
+
+# Secure credential storage
+keyring>=24.0.0
+
+# JSON schema validation
+jsonschema>=4.19.0
+
+# Security scanning (development)
+bandit>=1.7.5
+pip-audit>=2.6.1
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+
+# Code quality
+black>=23.7.0
+flake8>=6.1.0
+mypy>=1.5.0
+
+# Logging
+python-json-logger>=2.0.7
